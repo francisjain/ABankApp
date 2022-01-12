@@ -5,17 +5,35 @@ import { Injectable } from '@angular/core';
 })
 export class DataService {
 
+  currentuserName:any
+  currentAcno:any
+
+
   users: any = {
-    1000: { acno: 1000, uname: "Neer", password: "1000", balance: 5000 },
-    1001: { acno: 1001, uname: "Laisha", password: "1001", balance: 5000 },
-    1002: { acno: 1002, uname: "Vyom", password: "1002", balance: 5000 }
+    1000: { acno: 1000, uname: "Neer", password: "1000", balance: 5000,transaction:[] },
+    1001: { acno: 1001, uname: "Laisha", password: "1001", balance: 5000,transaction:[]},
+    1002: { acno: 1002, uname: "Vyom", password: "1002", balance: 5000,transaction:[] }
   }
 
-  currentuserName:any
-  constructor() { }
+  constructor() {                                                                                                
+    this.getDetails()
+  }
+
+//To store in local storage
   saveDetails(){
     if(this.users){localStorage.setItem("userDB",JSON.stringify(this.users))}
     if(this.currentuserName){localStorage.setItem("cUserName",JSON.stringify(this.currentuserName))}
+    if(this.currentAcno){localStorage.setItem("currentAcnoLocal",JSON.stringify(this.currentAcno))}
+
+  }
+//To get values in local storage
+getDetails(){
+    if(localStorage.getItem("userDB")){this.users=JSON.parse(localStorage.getItem("userDB") || '')}
+    if(localStorage.getItem("cUserName")){this.currentuserName=JSON.parse(localStorage.getItem("cUserName") || '')}
+    if(localStorage.getItem("currentAcnoLocal")){this.currentAcno=JSON.parse(localStorage.getItem("currentAcnoLocal") || '')}
+  }
+  getTransaction(){
+    return this.users[this.currentAcno].transaction
   }
   register(acno: any, password: any, uname: any) {
     let db = this.users
@@ -23,7 +41,7 @@ export class DataService {
       return false
     } else {
       db[acno] = {
-        acno, uname, password, balance: 0
+        acno, uname, password, balance: 0,transaction:[]
       }
       console.log(db);
       this.saveDetails()
@@ -38,6 +56,7 @@ export class DataService {
 
       if (password == database[acno]["password"]) {
         this.currentuserName=database[acno]["uname"]
+        this.currentAcno=acno
         this.saveDetails()
         return true
       } else {
@@ -57,6 +76,10 @@ export class DataService {
     if (acno in db) {
       if (password == db[acno]["password"]) {
         db[acno]["balance"] = db[acno]["balance"] + amount
+        db[acno].transaction.push({
+          amount:amount,
+          type:"CREDIT"
+        })
         this.saveDetails()
         return db[acno]["balance"]
 
@@ -80,6 +103,10 @@ export class DataService {
 
         if (db[acno]["balance"] >= amount) {
           db[acno]["balance"] = db[acno]["balance"] - amount
+          db[acno].transaction.push({
+            amount:amount,
+            type:"DEBITED"
+          })
           this.saveDetails()
           return db[acno]["balance"]
         } 

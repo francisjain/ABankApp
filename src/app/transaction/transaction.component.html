@@ -1,0 +1,28 @@
+<h1 style="color: aliceblue;text-align: center;">Transaction History</h1>
+
+
+<div class="row">
+    <div class="col-3"></div>
+    <div class="col-6 ">
+        <table class="table table-striped table-hover table-bordered table-secondary">
+            <thead>
+                <tr style="color:blue; text-align: center;"> 
+                    <th>Index</th>
+                    <th>Amount</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let transaction of transactions; let i=index">
+                    <th>{{i+1}}</th>
+                    <th>{{transaction.to}}||{{transaction.from}}</th>
+                    <th>{{transaction.amt}}</th>
+                    <th>{{transaction.bal}}</th>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+    <div class="col-3"></div>
+</div>
+<div class="text-center mt-3"><a routerLink="/dashboard" style="background-color: antiquewhite;font-weight: bold; padding: 10px;">Back to Dashboard</a></div>
