@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 @Injectable({
@@ -15,7 +16,7 @@ export class DataService {
     1002: { acno: 1002, uname: "Vyom", password: "1002", balance: 5000,transaction:[] }
   }
 
-  constructor() {                                                                                                
+  constructor(private http:HttpClient) {                                                                                                
     this.getDetails()
   }
 
@@ -24,8 +25,9 @@ export class DataService {
     if(this.users){localStorage.setItem("userDB",JSON.stringify(this.users))}
     if(this.currentuserName){localStorage.setItem("cUserName",JSON.stringify(this.currentuserName))}
     if(this.currentAcno){localStorage.setItem("currentAcnoLocal",JSON.stringify(this.currentAcno))}
-
   }
+
+  
 //To get values in local storage
 getDetails(){
     if(localStorage.getItem("userDB")){this.users=JSON.parse(localStorage.getItem("userDB") || '')}
@@ -35,20 +37,29 @@ getDetails(){
   getTransaction(){
     return this.users[this.currentAcno].transaction
   }
-  register(acno: any, password: any, uname: any) {
-    let db = this.users
-    if (acno in db) {
-      return false
-    } else {
-      db[acno] = {
-        acno, uname, password, balance: 0,transaction:[]
-      }
-      console.log(db);
-      this.saveDetails()
-      return true
-    }
-  }
 
+  // -------------------register client--------------
+  // register(acno: any, password: any, uname: any) {
+  //   let db = this.users
+  //   if (acno in db) {
+  //     return false
+  //   } else {
+  //     db[acno] = {
+  //       acno, uname, password, balance: 0,transaction:[]
+  //     }
+  //     console.log(db);
+  //     this.saveDetails()
+  //     return true
+  //   }
+  // }
+  // -------------------register client--------------
+
+  register(acno: any, password: any, uname: any) {
+    const data ={
+      acno,password,uname
+    }
+    return this.http.post("http://localhost:3000/register",data)
+  }
 
   login(acno: any, password: any) {
     let database = this.users
@@ -57,7 +68,7 @@ getDetails(){
       if (password == database[acno]["password"]) {
         this.currentuserName=database[acno]["uname"]
         this.currentAcno=acno
-        this.saveDetails()
+        // this.saveDetails()
         return true
       } else {
         alert("Incorrect Password")
